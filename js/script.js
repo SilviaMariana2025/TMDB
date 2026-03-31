@@ -541,34 +541,50 @@ async function precargarTemporadas(idSerie, temporadas){
 }
 async function verTemporadas(idSerie){
 
-mostrarLoading();
+  mostrarLoading();
 
-const url = `${baseUrl}/tv/${idSerie}?api_key=${apiKey}&language=es-ES`;
+  const url = `${baseUrl}/tv/${idSerie}?api_key=${apiKey}&language=es-ES`;
 
-try{
+  try{
 
-const response = await fetch(url);
-const data = await response.json();
+    const response = await fetch(url);
+    const data = await response.json();
 
-mostrarTemporadas(data.seasons);
-
-// 🔥 GUARDAR TODAS LAS TEMPORADAS
-if (navigator.onLine) {
-  precargarTemporadas(idSerie, data.seasons);
-}
-
-}catch(error){
-
-  const guardado = localStorage.getItem("detalleSerie");
-
-  if (guardado) {
-    const data = JSON.parse(guardado);
     mostrarTemporadas(data.seasons);
-  } else {
-    console.error(error);
-  }
-}
 
+    // 🔥 FORZAR GUARDADO DE TODAS
+    if (navigator.onLine) {
+      console.log("Precargando temporadas...");
+
+      for (let temp of data.seasons) {
+
+        if (temp.season_number === 0) continue;
+
+        const key = `temporada_${temp.season_number}`;
+
+        const urlTemp = `${baseUrl}/tv/${idSerie}/season/${temp.season_number}?api_key=${apiKey}&language=es-ES`;
+
+        const res = await fetch(urlTemp);
+        const dataTemp = await res.json();
+
+        localStorage.setItem(key, JSON.stringify(dataTemp));
+
+        console.log("Guardada:", key);
+      }
+    }
+
+  }catch(error){
+
+    const guardado = localStorage.getItem("detalleSerie");
+
+    if (guardado) {
+      const data = JSON.parse(guardado);
+      mostrarTemporadas(data.seasons);
+    } else {
+      console.error(error);
+    }
+
+  }
 }
 function mostrarTemporadas(temporadas){
 
