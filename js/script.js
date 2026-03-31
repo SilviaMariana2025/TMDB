@@ -138,6 +138,10 @@ const data = await response.json();
 localStorage.setItem("detalleSerie", JSON.stringify(data));
 
 mostrarDetalles(data);
+// 🔥 GUARDAR TODAS LAS TEMPORADAS AUTOMÁTICAMENTE
+if (navigator.onLine) {
+  precargarTemporadas(id, data.seasons);
+}
 
 }catch(error){
   const guardado = localStorage.getItem("detalleSerie");
@@ -150,7 +154,27 @@ mostrarDetalles(data);
 }
 
 }
+function mostrarDetallesTemporada(data) {
 
+  const container = document.getElementById("results");
+
+  container.classList.remove("grid");
+
+  container.innerHTML = `
+    ${botonVolver()}
+    <h1>${data.name}</h1>
+    <p>Episodios: ${data.episodes.length}</p>
+
+    <div class="grid">
+      ${data.episodes.map(ep => `
+        <div class="card">
+          <h3>${ep.name}</h3>
+          <p>${ep.overview || "Sin descripción"}</p>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
 function mostrarDetalles(serie){
 
 const container = document.getElementById("results");
