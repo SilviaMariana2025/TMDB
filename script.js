@@ -35,17 +35,27 @@ try {
 // realiza la petición a la api
 const response = await fetch(url);
 
-// convierte la respuesta en formato json
 const data = await response.json();
 
-// envía los resultados para mostrarlos en pantalla
+// 👉 GUARDAR
+localStorage.setItem("busquedaSeries", JSON.stringify(data.results));
+
 mostrarResultados(data.results);
+// envía los resultados para mostrarlos en pantalla
+
 
 } catch (error) {
+  console.error("Error:", error);
 
-// muestra error en consola si la petición falla
-console.error("Error:", error);
+  // 👉 CARGAR DESDE LOCAL
+  const guardado = localStorage.getItem("busquedaSeries");
 
+  if (guardado) {
+    mostrarResultados(JSON.parse(guardado));
+  } else {
+    document.getElementById("results").innerHTML =
+      "<h2>⚠️ Sin conexión y sin datos guardados</h2>";
+  }
 }
 
 }
@@ -124,13 +134,19 @@ const response = await fetch(url);
 // convierte la respuesta en json
 const data = await response.json();
 
-// envía los datos para mostrarlos
+// guardar
+localStorage.setItem("detalleSerie", JSON.stringify(data));
+
 mostrarDetalles(data);
 
 }catch(error){
+  const guardado = localStorage.getItem("detalleSerie");
 
-console.error("Error:", error);
-
+  if (guardado) {
+    mostrarDetalles(JSON.parse(guardado));
+  } else {
+    console.error("Error:", error);
+  }
 }
 
 }

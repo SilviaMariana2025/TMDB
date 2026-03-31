@@ -777,3 +777,15 @@ body.offline .descripcion-trailers,
 body.offline .trailers-grid {
     display: none !important;
 }
+.offline::before {
+  content: "⚠️ Estás sin conexión";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: red;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  z-index: 1000;
+}

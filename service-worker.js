@@ -51,8 +51,7 @@ self.addEventListener("fetch", event => {
       caches.match(event.request).then(response => {
         return response || fetch(event.request).then(fetchRes => {
           return caches.open(DATA_CACHE_NAME).then(cache => {
-            cache.put(event.request.url, fetchRes.clone());
-            return fetchRes;
+cache.put(event.request, fetchRes.clone());            return fetchRes;
           });
         });
       })
@@ -69,8 +68,7 @@ self.addEventListener("fetch", event => {
           if (response.status === 200) {
             const responseClone = response.clone();
             caches.open(DATA_CACHE_NAME).then(cache => {
-              cache.put(event.request.url, responseClone);
-            });
+cache.put(event.request, responseClone);            });
           }
           return response;
         })
@@ -82,17 +80,20 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // 4. Estrategia por defecto para lo principal (Cache first, fall back to network)
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request).then(fetchRes => {
-        return caches.open(CACHE_NAME).then(cache => {
-          if (event.request.method === "GET") {
-             cache.put(event.request.url, fetchRes.clone());
-          }
-          return fetchRes;
-        });
+
+ // 4. Estrategia por defecto para lo principal
+event.respondWith(
+  caches.match(event.request).then(response => {
+    return response || fetch(event.request).then(fetchRes => {
+      return caches.open(CACHE_NAME).then(cache => {
+        if (event.request.method === "GET") {
+          cache.put(event.request, fetchRes.clone());
+        }
+        return fetchRes;
       });
-    })
-  );
+    }).catch(() => {
+      return caches.match("./index.html"); // ✅ AQUÍ sí está bien
+    });
+  })
+);
 });
