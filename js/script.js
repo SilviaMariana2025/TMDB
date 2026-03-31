@@ -469,56 +469,32 @@ mostrarLoading();
 
 const url = `${baseUrl}/tv/${idSerie}/season/${temporada}?api_key=${apiKey}&language=es-ES`;
 
+const key = `temporada_${temporada}`;
+
 try{
 
 const response = await fetch(url);
 const data = await response.json();
 
-const container = document.getElementById("results");
+// ✅ GUARDAR en localStorage
+localStorage.setItem(key, JSON.stringify(data));
 
-const imagen = data.poster_path
-? `https://image.tmdb.org/t/p/w400${data.poster_path}`
-: "";
-
-
-container.innerHTML = `
-${botonVolver()}
-
-<h1 class="titulo-temporadas">${data.name}</h1>
-
-<img class="poster-detalle" src="${imagen}">
-
-<div class="info-temporada">
-
-<h3>📖 Descripción</h3>
-<p>${data.overview || "Sin descripción disponible."}</p>
-
-<h3>🎬 Episodios: ${data.episodes.length}</h3>
-
-</div>
-
-<h2>🖼 Galería de la temporada</h2>
-
-<div class="galeria-temporada"></div>
-`;
-
-const galeria = document.querySelector(".galeria-temporada");
-
-data.episodes.forEach(ep => {
-
-if(!ep.still_path) return;
-
-const img = document.createElement("img");
-
-img.src = `https://image.tmdb.org/t/p/w400${ep.still_path}`;
-img.alt = ep.name;
-
-galeria.appendChild(img);
-
-});
+mostrarDetallesTemporada(data);
 
 }catch(error){
-console.error(error);
+
+console.log("Sin conexión, intentando cargar local...");
+
+// ✅ CARGAR desde localStorage
+const guardado = localStorage.getItem(key);
+
+if(guardado){
+  mostrarDetallesTemporada(JSON.parse(guardado));
+}else{
+  document.getElementById("results").innerHTML =
+    botonVolver() + "<h2>⚠️ Sin conexión y sin datos guardados</h2>";
+}
+
 }
 
 }
