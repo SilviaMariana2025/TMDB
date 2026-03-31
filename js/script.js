@@ -467,42 +467,78 @@ async function verDetallesTemporada(idSerie, temporada){
 
 mostrarLoading();
 
-const url = `${baseUrl}/tv/${idSerie}/season/${temporada}?api_key=${apiKey}&language=es-ES`;
-
 const key = `temporada_${temporada}`;
 
-try{
+// 🔥 SI NO HAY INTERNET → NO HAGAS FETCH
+if (!navigator.onLine) {
+
+  console.log("Offline directo");
+
+  const guardado = localStorage.getItem(key);
+
+  if (guardado) {
+    mostrarDetallesTemporada(JSON.parse(guardado));
+  } else {
+    document.getElementById("results").innerHTML =
+      botonVolver() + "<h2>⚠️ Sin conexión y sin datos guardados</h2>";
+  }
+
+  return;
+}
+
+const url = `${baseUrl}/tv/${idSerie}/season/${temporada}?api_key=${apiKey}&language=es-ES`;
+
+try {
 
 const response = await fetch(url);
 const data = await response.json();
 
-// ✅ GUARDAR en localStorage
+// ✅ GUARDAR
 localStorage.setItem(key, JSON.stringify(data));
 
 mostrarDetallesTemporada(data);
 
-}catch(error){
+} catch (error) {
 
-console.log("Sin conexión, intentando cargar local...");
+console.log("Error real de fetch");
 
-// ✅ CARGAR desde localStorage
 const guardado = localStorage.getItem(key);
 
-if(guardado){
+if (guardado) {
   mostrarDetallesTemporada(JSON.parse(guardado));
-}else{
+} else {
   document.getElementById("results").innerHTML =
     botonVolver() + "<h2>⚠️ Sin conexión y sin datos guardados</h2>";
 }
 
 }
-
 }
+async function precargarTemporadas(idSerie, temporadas){
 
+  for (let temp of temporadas) {
 
+    if (temp.season_number === 0) continue;
 
+    const key = `temporada_${temp.season_number}`;
 
+    // evitar volver a guardar si ya existe
+    if (localStorage.getItem(key)) continue;
 
+    const url = `${baseUrl}/tv/${idSerie}/season/${temp.season_number}?api_key=${apiKey}&language=es-ES`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      localStorage.setItem(key, JSON.stringify(data));
+
+      console.log("Guardada temporada:", temp.season_number);
+
+    } catch (error) {
+      console.log("Error guardando temporada:", temp.season_number);
+    }
+  }
+}
 async function verTemporadas(idSerie){
 
 mostrarLoading();
@@ -516,8 +552,21 @@ const data = await response.json();
 
 mostrarTemporadas(data.seasons);
 
+// 🔥 GUARDAR TODAS LAS TEMPORADAS
+if (navigator.onLine) {
+  precargarTemporadas(idSerie, data.seasons);
+}
+
 }catch(error){
-console.error(error);
+
+  const guardado = localStorage.getItem("detalleSerie");
+
+  if (guardado) {
+    const data = JSON.parse(guardado);
+    mostrarTemporadas(data.seasons);
+  } else {
+    console.error(error);
+  }
 }
 
 }
