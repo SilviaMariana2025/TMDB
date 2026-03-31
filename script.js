@@ -828,3 +828,24 @@ if ("serviceWorker" in navigator) {
     .then(() => console.log("Service Worker registrado"))
     .catch(error => console.log("Error:", error));
 }
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); // evita que Chrome muestre el prompt automáticamente
+  deferredPrompt = e;
+  // aquí puedes mostrar tu propio botón "Instalar app"
+  const installBtn = document.getElementById('installBtn');
+  installBtn.style.display = 'block';
+
+  installBtn.addEventListener('click', () => {
+    deferredPrompt.prompt(); // muestra el prompt
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('App instalada');
+      } else {
+        console.log('Instalación rechazada');
+      }
+      deferredPrompt = null;
+    });
+  });
+});
