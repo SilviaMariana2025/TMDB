@@ -1,7 +1,7 @@
 {
   "name": "TMDB Series App",
   "short_name": "SeriesApp",
-  "start_url": "./index.html",
+  "start_url": "/TMDB/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
