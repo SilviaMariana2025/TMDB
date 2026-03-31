@@ -823,11 +823,13 @@ window.addEventListener("offline", updateOnlineStatus);
 // Verificación inicial
 updateOnlineStatus();
 
+
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js")
+  navigator.serviceWorker.register("/TMDB/js/service-worker.js")
     .then(() => console.log("Service Worker registrado"))
     .catch(error => console.log("Error:", error));
 }
+
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
