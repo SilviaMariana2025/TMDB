@@ -2,8 +2,8 @@ const CACHE_NAME = "series-app-v2";
 const DATA_CACHE_NAME = "series-data-v1";
 
 const urlsToCache = [
-  "./",
-  "./index.html",
+  "/",
+  "/index.html",
   "./style.css",
   "./script.js",
   "./manifest.json",
@@ -109,9 +109,10 @@ self.addEventListener("fetch", event => {
           return fetchRes;
         });
 
-      }).catch(() => {
-        return caches.match("./index.html");
-      });
+      })
+.catch(() => {
+  return caches.match("/index.html");
+});
     })
   );
 
