@@ -777,3 +777,91 @@ body.offline .descripcion-trailers,
 body.offline .trailers-grid {
     display: none !important;
 }
+/* ========================= */
+/* CELULARES MEJORADO 🔥 */
+/* ========================= */
+
+@media (max-width: 600px){
+
+/* 👉 TODO en columna */
+.detalle-horizontal{
+flex-direction: column;
+gap: 20px;
+text-align: center;
+}
+
+/* 👉 botones en vertical */
+.botones-detalle{
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.botones-detalle button{
+width: 90%;
+max-width: 300px;
+}
+
+/* 👉 grids a 1 columna */
+.grid{
+grid-template-columns: 1fr;
+}
+
+.trailers-grid{
+grid-template-columns: 1fr;
+}
+
+.reviews-grid{
+grid-template-columns: 1fr;
+}
+
+.generos-grid{
+grid-template-columns: 1fr;
+}
+
+.contenedor-comentarios{
+grid-template-columns: 1fr;
+}
+
+.popularidad-contenedor{
+grid-template-columns: 1fr;
+}
+
+/* 👉 temporadas (scroll horizontal se vuelve vertical) */
+.temporadas-grid{
+flex-direction: column;
+align-items: center;
+overflow-x: hidden;
+}
+
+/* 👉 tarjetas más compactas */
+.card{
+width: 90%;
+margin: auto;
+}
+
+/* 👉 imágenes ajustadas */
+.imagen-serie{
+width: 100%;
+}
+
+/* 👉 textos */
+h1{
+font-size: 24px;
+}
+
+h2{
+font-size: 20px;
+}
+
+p{
+font-size: 14px;
+}
+
+/* 👉 iframe responsive */
+.trailer{
+width: 100%;
+height: auto;
+}
+
+}
