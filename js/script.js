@@ -719,94 +719,76 @@ console.error(error);
 }
 async function verReviews(id){
 
-mostrarLoading();
+  mostrarLoading();
 
-const url = `${baseUrl}/tv/${id}/reviews?api_key=${apiKey}`;
+  const url = `${baseUrl}/tv/${id}/reviews?api_key=${apiKey}`;
 
-try{
+  try{
 
-const response = await fetch(url);
-const data = await response.json();
+    const response = await fetch(url);
+    const data = await response.json();
 
-const container = document.getElementById("results");
+    // 👉 GUARDAR
+    localStorage.setItem("reviewsSerie", JSON.stringify(data.results));
 
-if(data.results.length === 0){
-container.innerHTML = botonVolver() + "<h2>No hay comentarios disponibles</h2>";
-return;
+    mostrarReviews(data.results);
+
+  }catch(error){
+
+    console.log("Modo offline - cargando reviews guardados");
+
+    const guardado = localStorage.getItem("reviewsSerie");
+
+    if (guardado) {
+      mostrarReviews(JSON.parse(guardado));
+    } else {
+      document.getElementById("results").innerHTML =
+        botonVolver() + "<h2>⚠️ Sin conexión y sin datos guardados</h2>";
+    }
+
+  }
 }
-container.innerHTML = `
-${botonVolver()}
+function mostrarReviews(reviews){
 
-<section class="comentarios">
-<h1 class="titulo-comentarios">💬✨ COMENTARIOS DE LOS ESPECTADORES ✨💬</h1>
+  const container = document.getElementById("results");
 
-  <div class="contenedor-comentarios">
+  if(!reviews || reviews.length === 0){
+    container.innerHTML = botonVolver() + "<h2>No hay comentarios disponibles</h2>";
+    return;
+  }
 
-    <div class="comentario">
-      <p>"Una de las mejores series de ciencia ficción de la historia. Cada episodio tiene una historia única que te hace pensar."</p>
-      <span>- Usuario 1</span>
-    </div>
+  container.innerHTML = `
+    ${botonVolver()}
 
-    <div class="comentario">
-      <p>"Me encanta cómo cada capítulo tiene un final inesperado. Es una serie muy creativa."</p>
-      <span>- Usuario 2</span>
-    </div>
+    <section class="comentarios">
+      <h1 class="titulo-comentarios">💬✨ COMENTARIOS DE LOS ESPECTADORES ✨💬</h1>
+      <div class="reviews-grid"></div>
+    </section>
+  `;
 
-    <div class="comentario">
-      <p>"The Twilight Zone mezcla misterio, ciencia ficción y crítica social de forma increíble."</p>
-      <span>- Usuario 3</span>
-    </div>
+  const grid = document.querySelector(".reviews-grid");
 
-    <div class="comentario">
-      <p>"Una serie clásica que sigue siendo interesante incluso hoy en día."</p>
-      <span>- Usuario 4</span>
-    </div>
+  reviews.slice(0,4).forEach(review => {
 
-    <div class="comentario">
-      <p>"Cada episodio es diferente y siempre tiene un mensaje profundo. Es una serie muy adelantada a su tiempo."</p>
-      <span>- Usuario 5</span>
-    </div>
+    const rating = review.author_details?.rating
+      ? "⭐".repeat(Math.round(review.author_details.rating / 2))
+      : "⭐⭐⭐";
 
-    <div class="comentario">
-      <p>"Los giros inesperados al final de cada historia hacen que la serie sea muy emocionante."</p>
-      <span>- Usuario 6</span>
-    </div>
+    const div = document.createElement("div");
 
-  </div>
-</section>
-`;
+    div.className = "review-card";
 
+    div.innerHTML = `
+      <h3>${review.author}</h3>
+      <p class="estrellas">${rating}</p>
+      <p>${review.content.substring(0,200)}...</p>
+    `;
 
-const grid = document.querySelector(".reviews-grid");
+    grid.appendChild(div);
 
-data.results.slice(0,4).forEach(review => {
-    
+  });
 
-const rating = review.author_details.rating 
-? "⭐".repeat(Math.round(review.author_details.rating/2))
-: "⭐⭐⭐";
-
-const div = document.createElement("div");
-
-div.className = "review-card";
-
-div.innerHTML = `
-<h3>${review.author}</h3>
-
-<p class="estrellas">${rating}</p>
-
-<p>${review.content.substring(0,300)}...</p>
-`;
-
-grid.appendChild(div);
-
-});
-
-}catch(error){
-console.error(error);
 }
-}
-
 
 function mostrarGeneros(generos){
 
